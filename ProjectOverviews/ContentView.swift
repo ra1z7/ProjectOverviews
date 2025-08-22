@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+public func removeUnusedVarError(for value: Any) -> some View{
+    Button("Print") {
+        print(value)
+    }
+}
+
 struct ContentView: View {
     var body: some View {
         VStack {

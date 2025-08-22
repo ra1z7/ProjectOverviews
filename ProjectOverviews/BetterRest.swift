@@ -49,6 +49,8 @@ struct BetterRest: View {
         let components2 = Calendar.current.dateComponents([.hour, .minute], from: date) // extracting DateComponents from 'date' constant
         let hour = components2.hour ?? 0
         let minute = components2.minute ?? 0
+        
+        print(hour, minute)
     }
 }
 
