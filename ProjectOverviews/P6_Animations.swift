@@ -56,11 +56,105 @@ struct Animations: View {
             implicitAnimationDemo
             
             blurMeButton
+            
+            PulsatingButton(withText: "Click Me")
         }
         .font(.subheadline.monospaced())
     }
 }
 
+struct CustomizingAnimations: View {
+    @State private var scaleAmount = 1.0
+    @State private var colorIndex = -1
+    @State private var colors: [Color] = [.red, .orange, .yellow, .green, .blue, .indigo, .purple, .pink, .mint, .teal].shuffled()
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView() {
+                VStack(spacing: 25) {
+                    Animations()
+                    
+                    HStack(spacing: 30) {
+                        animationDemo(for: .linear, caption: "linear", color: colors[0])
+                        animationDemo(for: .default, caption: "default", color: colors[1])
+                    }
+                    HStack(spacing: 30) {
+                        animationDemo(for: .bouncy, caption: "bouncy", color: colors[2])
+                        animationDemo(for: .easeIn, caption: "easeIn", color: colors[3])
+                    }
+                    HStack(spacing: 30) {
+                        animationDemo(for: .easeOut, caption: "easeOut", color: colors[4])
+                        animationDemo(for: .easeInOut, caption: "easeInOut", color: colors[5])
+                    }
+                    HStack(spacing: 30) {
+                        animationDemo(for: .interactiveSpring, caption: "interactiveSpring", color: colors[6])
+                        animationDemo(for: .interpolatingSpring, caption: "interpolatingSpring", color: colors[7])
+                    }
+                    HStack(spacing: 30) {
+                        animationDemo(for: .smooth, caption: "smooth", color: colors[8])
+                        animationDemo(for: .snappy, caption: "snappy", color: colors[9])
+                    }
+                }
+            }
+            .navigationTitle("Animations Demo")
+            .padding()
+            .onAppear {
+                scaleAmount = 2.0
+                
+                Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
+                    withAnimation(.easeOut(duration: 3)) {
+                        colors.shuffle()
+                    }
+                }
+            }
+        }
+    }
+    
+    func animationDemo(for animation: Animation, caption: String, color: Color) -> some View {
+        VStack(spacing: 35) {
+            Circle()
+                .fill(color.gradient)
+                .frame(width: 50)
+                .scaleEffect(scaleAmount)
+                .animation(animation.delay(1).repeatForever(autoreverses: true), value: scaleAmount)
+            // When we say .easeInOut(duration: 2) we’re actually creating an instance of an Animation struct that has its own set of modifiers. So, we can attach modifiers directly to the animation to add a delay like above
+        
+            Text(caption)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(width: 150, height: 150)
+    }
+}
+
+struct PulsatingButton: View {
+    let title: String
+    
+    @State private var scaleAmount = 1.0
+    
+    var body: some View {
+        Button(title) { }
+        .foregroundStyle(.white)
+        .padding(50)
+        .background(.orange.gradient)
+        .clipShape(.circle)
+        .overlay {
+            Circle()
+                .stroke(.orange)
+                .scaleEffect(scaleAmount)
+                .opacity(2 - scaleAmount)
+                .animation(.easeInOut(duration: 2).repeatForever(autoreverses: false), value: scaleAmount)
+        }
+        .onAppear {
+            scaleAmount = 2.0
+        }
+    }
+    
+    init(withText title: String) {
+        self.title = title
+    }
+}
+
 #Preview {
-    Animations()
+    CustomizingAnimations()
 }
