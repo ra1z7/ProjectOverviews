@@ -189,6 +189,24 @@ struct AnimatingBindings: View {
     // These binding animations effectively turn the tables on implicit animations: rather than setting the animation on a view and implicitly animating it with a state change, we now set nothing on the view and explicitly animate it with a state change. In the former, the state change has no idea it will trigger an animation, and in the latter the view has no idea it will be animated
 }
 
+struct ExplicitAnimation: View {
+    // it’s not attached to a binding, and it’s not attached to a view, it’s just us explicitly asking for a particular animation to occur because of a state change.
+    @State private var rotationAmount = 0.0
+    
+    var body: some View {
+        Button("Rotate") {
+            withAnimation(.spring(duration: 10, bounce: 0.5)) { // without this, change will happen immediately, because there is no animation modifier attached to the button
+                rotationAmount += 360
+            }
+        }
+        .foregroundStyle(.white)
+        .padding(50)
+        .background(.orange.gradient)
+        .clipShape(.rect(cornerRadius: 15))
+        .rotation3DEffect(.degrees(rotationAmount), axis: (x: 0, y: 1, z: 0))
+    }
+}
+
 #Preview {
-    AnimatingBindings()
+    ExplicitAnimation()
 }
