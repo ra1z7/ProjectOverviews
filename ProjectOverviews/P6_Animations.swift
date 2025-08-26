@@ -155,6 +155,40 @@ struct PulsatingButton: View {
     }
 }
 
+// The animation() modifier can be applied to any SwiftUI binding, which causes the value to animate between its current and new value.
+struct AnimatingBindings: View {
+    @State private var scaleAmount = 1.0
+    @State private var scaleUp = false
+    
+    var body: some View {
+        VStack {
+            Stepper("Scale Amount", value: $scaleAmount.animation(
+                .easeOut(duration: 2)
+                    .repeatCount(3, autoreverses: true)
+            ), in: 1...10)
+            // What’s actually happening here is that SwiftUI is examining the state of our view before the binding changes, examining the target state of our views after the binding changes, then applying an animation to get from point A to point B.
+            
+            // This is why we can animate a Boolean changing: Swift isn’t somehow inventing new values between false and true, but just animating the view changes that occur as a result of the change.
+            Toggle("Scale Up to 2x", isOn: $scaleUp.animation())
+            
+            // With this variant of the animation() modifier, we don’t need to specify which value we’re watching for changes – it’s literally attached to the value it should watch!
+            
+            Spacer()
+            
+            Button("Scale Up") {
+                scaleAmount += 1.0
+            }
+            .foregroundStyle(.white)
+            .padding(40)
+            .background(.red.gradient)
+            .clipShape(.circle)
+            .scaleEffect(scaleUp ? 2.0 : scaleAmount)
+        }
+    }
+    
+    // These binding animations effectively turn the tables on implicit animations: rather than setting the animation on a view and implicitly animating it with a state change, we now set nothing on the view and explicitly animate it with a state change. In the former, the state change has no idea it will trigger an animation, and in the latter the view has no idea it will be animated
+}
+
 #Preview {
-    CustomizingAnimations()
+    AnimatingBindings()
 }
