@@ -207,6 +207,53 @@ struct ExplicitAnimation: View {
     }
 }
 
+struct RotationEffectDemo: View {
+    @State private var rotationAngle = 0.0
+    @State private var rotationAxis = "x"
+    
+    var axisValue: (Double, Double, Double) {
+        switch rotationAxis {
+        case "x":
+            (1, 0, 0)
+        case "y":
+            (0, 1, 0)
+        case "z":
+            (0, 0, 1)
+        default:
+            (0, 0, 0)
+        }
+    }
+    
+    var body: some View {
+        VStack(spacing: 40) {
+            Text("Rotate Me in 3D")
+                .font(.largeTitle.bold())
+
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.blue.gradient)
+                .frame(width: 200, height: 200)
+                .rotation3DEffect(
+                    .degrees(rotationAngle),
+                    axis: (x: axisValue.0, y: axisValue.1, z: axisValue.2),
+                    perspective: 0.5 // adds realistic depth to the rotation
+                )
+            
+            Picker("Select Rotation Axis", selection: $rotationAxis) {
+                Text("Horizontal").tag("x")
+                Text("Vertical").tag("y")
+                Text("Depth").tag("z")
+            }
+            .pickerStyle(.segmented)
+
+            Slider(value: $rotationAngle, in: 0...360, step: 1) {
+                // this closure acts as a label for the slider, helpful for accessibility and VoiceOver, even if it's not always visible on screen.
+                Text("Rotation Angle")
+            }
+        }
+        .padding(40)
+    }
+}
+
 #Preview {
-    ExplicitAnimation()
+    RotationEffectDemo()
 }
