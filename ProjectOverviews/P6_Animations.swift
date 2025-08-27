@@ -359,6 +359,70 @@ struct TransitionDemo: View {
     }
 }
 
+// Custom Transition
+struct CornerRotateModifier: ViewModifier {
+    let rotationAmount: Double
+    let anchorPoint: UnitPoint
+    
+    func body(content: Content) -> some View {
+        content
+            .rotationEffect(.degrees(rotationAmount), anchor: anchorPoint)
+            .clipShape(.rect(cornerRadius: 20))
+    }
+}
+
+extension AnyTransition {
+    // AnyTransition.modifier lets you define a custom “enter/exit” animation.
+    //     active = what it looks like when disappearing/appearing.
+    //     identity = what the view looks like normally (no rotation).
+    
+    static var pivotInOut: AnyTransition {
+        let insertion = AnyTransition.modifier(
+            active: CornerRotateModifier(rotationAmount: -90, anchorPoint: .topLeading),
+            identity: CornerRotateModifier(rotationAmount: 0, anchorPoint: .topLeading)
+        )
+        
+        let removal = AnyTransition.modifier(
+            active: CornerRotateModifier(rotationAmount: 90, anchorPoint: .topTrailing),
+            identity: CornerRotateModifier(rotationAmount: 0, anchorPoint: .topTrailing)
+        )
+        
+        return AnyTransition.asymmetric(insertion: insertion, removal: removal)
+    }
+}
+
+struct CustomTransitionDemo: View {
+    @State private var isShowingBackground = false
+    
+    var body: some View {
+        ZStack {
+            if isShowingBackground {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(.red.gradient)
+                    .frame(width: 150, height: 75)
+//                    .transition(.pivotInOut)
+                    .transition(
+                        .asymmetric(
+                            insertion: .scale(scale: 0, anchor: .topLeading),
+                            removal: .scale(scale: 0, anchor: .bottomTrailing)
+                        )
+                    )
+            }
+            
+            Button {
+                withAnimation {
+                    isShowingBackground.toggle()
+                }
+            } label: {
+                Text(isShowingBackground ? "Hide" : "Show")
+                    .font(.headline.monospaced())
+                    .foregroundStyle(isShowingBackground ? .white : .black)
+                    .contentTransition(.numericText())
+            }
+        }
+    }
+}
+
 #Preview {
-    TransitionDemo()
+    CustomTransitionDemo()
 }
