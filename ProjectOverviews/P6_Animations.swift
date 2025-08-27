@@ -254,6 +254,27 @@ struct RotationEffectDemo: View {
     }
 }
 
+// Day 33
+struct AnimationStack: View {
+    // You can attach the animation() modifier several times, and the order in which you use it matters.
+    // When we apply multiple animation() modifiers, each one controls everything before it up to the next animation, which lets us split one state change into as many segments as we need
+    // It’s also possible to disable animations entirely by passing 'nil' to the modifier, For example, you might want the color change to happen immediately but the clip shape to retain its animation
+    
+    @State private var isRed = false
+    
+    var body: some View {
+        Button("Change") {
+            isRed.toggle()
+        }
+        .frame(width: 200, height: 200)
+        .background(isRed ? .red : .blue)
+        .foregroundStyle(.white)
+        .animation(.default, value: isRed)
+        .clipShape(.rect(cornerRadius: isRed ? 60 : 0))
+        .animation(.spring(duration: 1, bounce: 0.5), value: isRed)
+    }
+}
+
 #Preview {
-    RotationEffectDemo()
+    AnimationStack()
 }
