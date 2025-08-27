@@ -275,6 +275,37 @@ struct AnimationStack: View {
     }
 }
 
+struct DragGestureCard: View {
+    // we have two options: add an implicit animation that will animate the drag and the release, or add an explicit animation to animate just the release.
+    
+    @State private var dragAmount = CGSize.zero
+    
+    var body: some View {
+        LinearGradient(colors: [.blue, .black], startPoint: .topLeading, endPoint: .bottomTrailing)
+            .frame(width: 300, height: 200)
+            .clipShape(.rect(cornerRadius: 10))
+            .offset(dragAmount) // lets us adjust the X and Y coordinate of a view without moving other views around it. You can pass in discrete X and Y coordinates if you want to, but it can also take a CGSize directly.
+            .gesture(
+                DragGesture()
+                    // lets us run a closure whenever the user moves their finger
+                    .onChanged { dragValue in
+                        withAnimation(.interactiveSpring) {
+                            dragAmount = dragValue.translation
+                            // .translation tells us how far it has moved from the start point
+                        }
+                    }
+                    // lets us run a closure when the user lifts their finger off the screen, ending the drag
+                    .onEnded { _ in
+                        withAnimation(.bouncy(extraBounce: 0.2)) {
+                            dragAmount = CGSize.zero
+                        }
+                    }
+                
+                // Both of those closures are given a single parameter, which describes the drag operation like where it started, where it is currently, how far it moved, and so on.
+            )
+    }
+}
+
 #Preview {
-    AnimationStack()
+    DragGestureCard()
 }
