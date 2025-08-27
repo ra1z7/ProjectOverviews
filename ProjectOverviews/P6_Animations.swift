@@ -306,6 +306,35 @@ struct DragGestureCard: View {
     }
 }
 
+struct SnakeTextEffect: View {
+    @State private var dragAmount = CGSize.zero
+    @State private var isBGRed = false
+    
+    let letters = Array("SwiftUI")
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(0 ..< letters.count, id: \.self) { index in
+                Text(String(letters[index]))
+                    .font(.title)
+                    .foregroundStyle(.white)
+                    .padding(5)
+                    .background(isBGRed ? Color.red.gradient : Color.blue.gradient)
+                    .offset(dragAmount)
+                    .animation(.linear.delay(Double(index) / 15), value: dragAmount)
+            }
+        }
+        .gesture(
+            DragGesture()
+                .onChanged { dragAmount = $0.translation }
+                .onEnded { _ in
+                    dragAmount = .zero
+                    isBGRed.toggle()
+                }
+        )
+    }
+}
+
 #Preview {
-    DragGestureCard()
+    SnakeTextEffect()
 }
