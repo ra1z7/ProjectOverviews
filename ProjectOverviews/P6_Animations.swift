@@ -335,6 +335,30 @@ struct SnakeTextEffect: View {
     }
 }
 
+struct TransitionDemo: View {
+    @State private var isShowingBox = false
+    
+    var body: some View {
+        VStack {
+            Button {
+                withAnimation() {
+                    isShowingBox.toggle()
+                }
+            } label: {
+                Text(isShowingBox ? "Hide" : "Show")
+                    .contentTransition(.numericText())
+            }
+            
+            if isShowingBox {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(.blue.gradient)
+                    .frame(width: 200, height: 200)
+                    .transition(.scale)
+            }
+        }
+    }
+}
+
 #Preview {
-    SnakeTextEffect()
+    TransitionDemo()
 }
